@@ -1,24 +1,30 @@
-FROM centos:7
+FROM alpine:latest
+RUN apk update
 RUN set -x \
-  && groupadd -g 1000 cloudcustodian \
-  && useradd -u 1000 -g 1000 cloudcustodian
+  && adduser -u 1000 -g 1000 -D azureuser
 
-RUN yum -y install epel-release
-RUN yum -y install \
+RUN apk -v --update --no-cache add \
   chromium \
-  python36-pip 
+  npm \
+  freetype \
+  freetype-dev \
+  harfbuzz \
+  ca-certificates \
+  ttf-freefont \
+  nodejs \
+  yarn \
+  curl
 
-RUN pip3 install npm
-RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
-RUN yum install -y yarn nodejs
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+RUN yarn add puppeteer@1.19.0
+RUN rm -rvf /var/cache/apk/*
 RUN npm install -g aws-azure-login --unsafe-perm
-RUN yum clean all
-RUN mkdir -p /usr/local/bin
-RUN curl -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
+RUN curl -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/aws-iam-authenticator
 RUN chmod +x /usr/local/bin/aws-iam-authenticator
 
-USER cloudcustodian
-WORKDIR /home/cloudcustodian
+USER azureuser
+WORKDIR /home/azureuser
 
-COPY ./docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY ./entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]

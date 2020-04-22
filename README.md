@@ -5,8 +5,6 @@ This is because cisco anyconnect on windows doesn't allow docker -v (GHETTTOOOO)
 This allows you to login and it'll dump the credentials file so you can pipe it to ~/.aws/credentials or whatever the equiv in windows land is.
 
 TODO:
-  Update Node.js and rebuild this thing. 
-  Make Smaller somehow.
 
 USAGE:
 

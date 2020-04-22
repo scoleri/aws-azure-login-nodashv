@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 set -e
 
 mkdir -p $HOME/.aws
